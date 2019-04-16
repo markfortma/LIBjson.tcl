@@ -22,18 +22,15 @@ set ::maxtime 2
 
 set ::actionatthreshold "return"
 
-# Global document length
-set ::docend 0
-
 proc lpop {target} {
     # always call as "set end [lpop collection]"
     # removed end value from collection
     # return end value or empty list, if unable/unsuccessful
     upvar 1 $target collection
     set last {}
-    if { [llength $collection] > 1 } {
+    if { [llength $collection] > 0 } {
 	set last [lindex $collection end]
-	set collection [lrange $collection 0 end-2]
+	set collection [lrange $collection 0 end-1]
     }
     return $last
 }
@@ -56,7 +53,8 @@ proc json_literal_create {document at} {
     if { [string length $document] > 0 } {
 	if { [regexp -nocase -- {(\s*)\"(\\[\"bfnrt\\]|\\u[0-9a-f]{4}|[^\"\b\f\n\r\t\\])*\"} $document groups space value] != 0 } {
 	    incr doclen [expr [string length $groups] - 1]
-	    set literal [string range $groups [string length $space] end]
+	    # Set the literal to be the substring, excluding double quotes
+	    set literal [string range $groups [expr [string length $space] + 1] end-1]
 	}
     }
     return $literal
@@ -74,11 +72,59 @@ proc json_boolean_create {document at} {
     return $boolean
 }
 
+proc json_parse {lexemes} {
+    set json_array {}
+    set stack {}
+    set keystack {}
+    set lastkey {}
+    set count 0
+    set length [llength $lexemes]
+    if { [string equal [lindex $lexemes 0] "\{"] == 1 && [string equal [lindex $lexemes end] "\}"] == 0 } {
+	error "Invalid JSON object"
+    } elseif { [string equal [lindex $lexemes 0] "\["] == 1 && [string equal [lindex $lexemes end] "\]"] == 0 } {
+	error "Invalid JSON list"
+    } else {
+	incr count
+	incr length -1
+    }
+    while { $count < $length } {
+	set token [lindex $lexemes $count]
+	switch -- $token {
+	    "\{" -
+	    "\[" {
+		lappend stack $json_array
+		lappend keystack [lpop json_array]
+		set json_array {}
+	    }
+	    "\}" -
+	    "\]" {
+		set parent [lpop stack]
+		lappend parent $json_array
+		set json_array $parent
+
+	    }
+	    ":" {
+		# Last element was a key
+		set lastkey [lindex $lexemes [expr $count - 1]]
+	    }
+	    "," {
+	        set lastkey {}
+	    }
+	    default {
+		lappend json_array $token
+	    }
+	}
+	incr count
+    }
+    return $json_array
+}
+
 proc json_lexer {document at} {
     # Create a list of JSON tokens and values
     set json_lexemes {}
+    set docend [string length $document]
     upvar 1 $at doclen
-    while { $doclen < $::docend } {
+    while { $doclen < $docend } {
 	if { [regexp -nocase -start $doclen -- {(\s*)([\{\}\[\]\"tfn0-9:,])} $document groups space character] != 0 } {
 	    incr doclen [string length $groups]
 	    switch -- $character {
@@ -122,13 +168,12 @@ proc json_lexer {document at} {
 	    incr doclen
 	}
     }
-    puts "[llength $json_lexemes] returning"
     return $json_lexemes
 }
 
 proc parse_json {document} {
     set doclen 0
-    set json_object {}
-    set $::docend [string length $document]
+    set $docend [string length $document]
+    set json_object {} 
     return $json_object
 }
