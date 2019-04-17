@@ -120,7 +120,11 @@ proc jsonnumtest {} {
     set failures 0
     set successes 0
     # An associative array of test values and their expected results
-    array set numtests [list {:   0.998,} {0.998} {  "$88.76",} {} {:  "0.98%",} {} {:99e-5,} {99e-5} {99} {99}]
+    array set numtests [list {:   0.998,} {0.998} {  "$88.76",} {88.76} {:  "0.98%",} {0.98} {:99e-5,} {99e-5} {99} {99}]
+
+    # NOTE: It is understandable that the decimal values within quotes (with punctuation/symbols) *should not* match; however,
+    # the numbers are of valid form. Be advised - during lexing, those would normally be diverted to
+    # json_literal_create
 
     puts "--- jsonnumtest ---"
     foreach test [array names numtests] {
@@ -269,6 +273,7 @@ proc testxpath {} {
         set nested [getxpath ${jdoc} ${test}]
         set valid $testitems(${test})
         if { [string compare ${valid} ${nested}] == 0 } {
+	    puts [format "found: \"%-20s\", passed" ${test}]
             incr successes
         } else {
             puts "${nested} <!> ${valid}"
@@ -294,6 +299,7 @@ proc testxpath {} {
         set nested [getxpath ${jdoc} ${test}]
         set valid $testitems2(${test})
         if { [string compare ${valid} ${nested}] == 0 } {
+	    puts [format "found: \"%-20s\", passed" ${test}]
             incr successes
         } else {
             puts "${nested} <!> ${valid}"
