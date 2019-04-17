@@ -119,11 +119,11 @@ proc json_parse {lexemes} {
     return $json_array
 }
 
-proc json_lexer {document at} {
+proc json_lexer {document} {
     # Create a list of JSON tokens and values
     set json_lexemes {}
+    set doclen 0
     set docend [string length $document]
-    upvar 1 $at doclen
     while { $doclen < $docend } {
 	if { [regexp -nocase -start $doclen -- {(\s*)([\{\}\[\]\"tfn0-9:,])} $document groups space character] != 0 } {
 	    incr doclen [string length $groups]
@@ -172,8 +172,37 @@ proc json_lexer {document at} {
 }
 
 proc parse_json {document} {
-    set doclen 0
-    set $docend [string length $document]
-    set json_object {} 
-    return $json_object
+    set json_array [json_parse [json_lexer $document]]
+    return $json_array
 }
+
+proc getxpath {ton pathspec} {
+    set object {}
+    if { [llength $ton] > 0 } {
+	set object $ton
+	if { [string length $pathspec] > 0 } {
+	    set lspec [split $pathspec "/"]
+	    if { [string equal [lindex $lspec 0] {}] } {
+		for {set start 1} {$start < [llength $lspec]} {incr start} {
+		    set spec [lindex $lspec $start]
+		    if { [string is integer $spec] && ($spec >= 0 && $spec < [llength $object]) } {
+			set object [lindex $object $spec]
+		    } elseif { [expr [llength $object] % 2] == 0 } {
+			array set collection $object
+			set object $collection($spec)
+		    } else {
+			error "invalid path element: \"$spec\""
+		    }
+		}
+	    } else {
+		error "pathspec \"$pathspec\" not started with \"/\""
+	    }
+	} else {
+	    error "pathspec \"$pathspec\" 0 length"
+	}
+    } else {
+	error "object ton 0 length"
+    }
+    return $object
+}
+
