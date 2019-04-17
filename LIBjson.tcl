@@ -39,7 +39,7 @@ proc json_numeric_create {document at} {
     set numeric 0
     upvar 1 $at doclen
     if { [string length $document] > 0 } {
-	if { [regexp -nocase -- {(\s*)(-?(?:[0-9]*)(?:[.]?[0-9]*)(?:e?[+\-]?[0-9]+))} $document groups space value] != 0 } {
+	if { [regexp -nocase -- {(\s*)(-?(?:0|[1-9][0-9]*)(?:\.[0-9]+)?(?:e[+\-]?[0-9]+)?)} $document groups space value] != 0 } {
 	    incr doclen [expr [string length $groups] - 1]
 	    set numeric $value
 	}
