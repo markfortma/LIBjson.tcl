@@ -12,6 +12,11 @@ Please refer to test/testkit.tcl, which contains a number of procedures
 to validate the effectiveness of the implementation. It can also be used
 to ensure that LIBjson.tcl procedures are in working order.
 
-## Contributors
+## Environment
+
+* Tcl v8.6
+* Debian/GNU Linux (stretch)
+
+## Author
 
 * [Matthew Markfort](mailto:matthew.markfort@gmail.com)
