@@ -66,31 +66,31 @@ proc poptests {} {
     set failures 0
     set successes 0
     set simplelist [list a b c]
-    set simplelen [llength $simplelist]
+    set simplelen [llength ${simplelist}]
     set testitem "d"
 
     puts "--- poptests ---"
 
     # Append (to demonstrate a "push" action)
-    lappend simplelist $testitem
-    if { [string compare $simplelist "a b c d"] == 0 && [llength $simplelist] == [expr $simplelen + 1]} {
-	puts "\"lappend\" passed"
-	incr successes
+    lappend simplelist ${testitem}
+    if { [string compare ${simplelist} "a b c d"] == 0 && [llength ${simplelist}] == [expr ${simplelen} + 1]} {
+        puts "\"lappend\" passed"
+        incr successes
     } else {
-	puts "\"lappend\" failed"
-	incr failures
+        puts "\"lappend\" failed"
+        incr failures
     }
 
     set element [lpop simplelist]
-    if { [string compare $element $testitem] == 0 && [llength $simplelist] == $simplelen } {
-	puts "\"lpop\" passed"
-	incr successes
+    if { [string compare ${element} ${testitem}] == 0 && [llength ${simplelist}] == ${simplelen} } {
+        puts "\"lpop\" passed"
+        incr successes
     } else {
-	puts "\"lpop\" failed"
-	incr failures
+        puts "\"lpop\" failed"
+        incr failures
     }
     puts "--- poptests ---"
-    procsummary $successes $failures
+    procsummary ${successes} ${failures}
 }
 
 proc jsonlittest {} {
@@ -101,42 +101,42 @@ proc jsonlittest {} {
 
     puts "--- jsonlittest ---"
     foreach test [array names littests] {
-	set doclen 0
-	set result [json_literal_create $test doclen]
-	if { [string compare $result $littests($test)] == 0 } {
-	    puts "\"json_literal_create\" passed"
-	    incr successes
-	} else {
-	    puts "$result <!> $littests($test)"
-	    puts "\"json_literal_create\" failed"
-	    incr failures
-	}
+        set doclen 0
+        set result [json_literal_create ${test} doclen]
+        if { [string compare ${result} $littests(${test})] == 0 } {
+            puts "\"json_literal_create\" passed"
+            incr successes
+        } else {
+            puts "${result} <!> ${littests}(${test})"
+            puts "\"json_literal_create\" failed"
+            incr failures
+        }
     }
     puts "--- jsonlittest ---"
-    procsummary $successes $failures
+    procsummary ${successes} ${failures}
 }
 
 proc jsonnumtest {} {
     set failures 0
     set successes 0
     # An associative array of test values and their expected results
-    array set numtests [list {:   0.998,} {0.998} {  "$88.76",} {} {:  "0.98%",} {} {:99e-5,} {99e-5} {99} {99}]
+    array set numtests [list {:   0.998,} {0.998} {  "${88}.76",} {} {:  "0.98%",} {} {:99e-5,} {99e-5} {99} {99}]
 
     puts "--- jsonnumtest ---"
     foreach test [array names numtests] {
-	set doclen 0
-	set result [json_numeric_create $test doclen]
-	if { [string compare $result $numtests($test)] == 0 } {
-	    puts "\"json_numeric_create\" passed"
-	    incr successes
-	} else {
-	    puts "$result <!> $numtests($test)"
-	    puts "\"json_numeric_create\" failed"
-	    incr failures
-	}
+        set doclen 0
+        set result [json_numeric_create ${test} doclen]
+        if { [string compare ${result} $numtests(${test})] == 0 } {
+            puts "\"json_numeric_create\" passed"
+            incr successes
+        } else {
+            puts "${result} <!> $numtests(${test})"
+            puts "\"json_numeric_create\" failed"
+            incr failures
+        }
     }
     puts "--- jsonnumtest ---"
-    procsummary $successes $failures
+    procsummary ${successes} ${failures}
 }
 
 proc jsonbooltest {} {
@@ -147,19 +147,19 @@ proc jsonbooltest {} {
 
     puts "--- jsonbooltest ---"
     foreach test [array names booltests] {
-	set doclen 0
-	set result [json_boolean_create $test doclen]
-	if { [string compare $result $booltests($test)] == 0 } {
-	    puts "\"json_boolean_create\" passed"
-	    incr successes
-	} else {
-	    puts "$result <!> $booltests($test)"
-	    puts "\"json_boolean_create\" failed"
-	    incr failures
-	}
+        set doclen 0
+        set result [json_boolean_create ${test} doclen]
+        if { [string compare ${result} $booltests(${test})] == 0 } {
+            puts "\"json_boolean_create\" passed"
+            incr successes
+        } else {
+            puts "${result} <!> ${booltests}(${test})"
+            puts "\"json_boolean_create\" failed"
+            incr failures
+        }
     }
     puts "--- jsonbooltest ---"
-    procsummary $successes $failures
+    procsummary ${successes} ${failures}
 }
 
 proc testlexemes {} {
@@ -200,30 +200,30 @@ proc testlexemes {} {
     lappend template "\}"
     lappend template "\]"
     puts "--- testlexemes ---"
-    set tokens [json_lexer $::listsample]
-    if { [llength $tokens] == [llength $template] } {
-	puts "Length phase:  passed"
-	incr successes
+    set tokens [json_lexer ${::listsample}]
+    if { [llength ${tokens}] == [llength ${template}] } {
+        puts "Length phase:  passed"
+        incr successes
     } else {
-	puts "Length phase:  failed"
-	incr failures
+        puts "Length phase:  failed"
+        incr failures
     }
     set compares 0
-    set lesslen [expr [llength $tokens] ? [llength $tokens] <= [llength $template] : [llength $template]]
-    for {set i 0} {$i < $lesslen} {incr i} {
-	if { [string compare [lindex $tokens $i] [lindex $template $i]] == 0 } {
-	    incr compares
-	}
+    set lesslen [expr [llength ${tokens}] ? [llength ${tokens}] <= [llength ${template}] : [llength ${template}]]
+    for {set i 0} {${i} < ${lesslen}} {incr i} {
+        if { [string compare [lindex ${tokens} ${i}] [lindex ${template} ${i}]] == 0 } {
+            incr compares
+        }
     }
-    if { $compares == $lesslen } {
-	puts "Compare phase: passed"
-	incr successes
+    if { ${compares} == ${lesslen} } {
+        puts "Compare phase: passed"
+        incr successes
     } else {
-	puts "Compare phase: failed"
-	incr failures
+        puts "Compare phase: failed"
+        incr failures
     }
     puts "--- testlexemes ---"
-    procsummary $successes $failures
+    procsummary ${successes} ${failures}
 }
 
 proc testparse {} {
@@ -231,27 +231,27 @@ proc testparse {} {
     set failures 0
 
     puts "--- testparse ---"
-    set jdoc [json_parse [json_lexer $::ctrlsample]]
-    if { [string compare $jdoc $::ctrlsampleton] == 0 } {
-	puts "\"ctrlsample\" passed"
-	incr successes
+    set jdoc [json_parse [json_lexer ${::ctrlsample}]]
+    if { [string compare ${jdoc} ${::ctrlsampleton}] == 0 } {
+        puts "\"ctrlsample\" passed"
+        incr successes
     } else {
-	puts "\"\$jdoc\" <!> \"\$ctrlsample\" failed"
-	incr failures
+        puts "\"\${jdoc}\" <!> \"\${ctrlsample}\" failed"
+        incr failures
     }
     unset jdoc
 
     set jdoc [parse_json $::listsample]
-    if { [string compare $jdoc $::listsampleton] == 0 } {
-	puts "\"listsample\" passed"
-	incr successes
+    if { [string compare ${jdoc} ${::listsampleton}] == 0 } {
+        puts "\"listsample\" passed"
+        incr successes
     } else {
-	puts "\"\$jdoc\" <!> \"\$listsample\" failed"
-	incr failures
+        puts "\"\${jdoc}\" <!> \"\${listsample}\" failed"
+        incr failures
     }
     unset jdoc
     puts "--- testparse ---"
-    procsummary $successes $failures
+    procsummary ${successes} ${failures}
 }
 
 proc testxpath {} {
@@ -264,68 +264,68 @@ proc testxpath {} {
     set failitems2 [list {/color}]
 
     puts "--- testxpath ---"
-    set jdoc [parse_json $::ctrlsample]
+    set jdoc [parse_json ${::ctrlsample}]
     foreach test [array names testitems] {
-	set nested [getxpath $jdoc $test]
-	set valid $testitems($test)
-	if { [string compare $valid $nested] == 0 } {
-	    incr successes
-	} else {
-	    puts "$nested <!> $valid"
-	    incr failures
-	}
+        set nested [getxpath ${jdoc} ${test}]
+        set valid $testitems(${test})
+        if { [string compare ${valid} ${nested}] == 0 } {
+            incr successes
+        } else {
+            puts "${nested} <!> ${valid}"
+            incr failures
+        }
     }
 
-    for {set i 0} {$i < [llength $failitems]} {incr i} {
-	set test [lindex $failitems $i]
-	if { [catch {set element [getxpath $jdoc $test]} mesg] == 0 } {
-	    # This is expected to fail, should not execute
-	    puts "found: \"$test\" as \"$element\""
-	    incr failures
-	} else {
-	    puts "caught exception, as expected"
-	    incr successes
-	}
+    for {set i 0} {${i} < [llength ${failitems}]} {incr i} {
+        set test [lindex ${failitems} ${i}]
+        if { [catch {set element [getxpath ${jdoc} ${test}]} mesg] == 0 } {
+            # This is expected to fail, should not execute
+            puts "found: \"${test}\" as \"${element}\""
+            incr failures
+        } else {
+            puts "caught exception, as expected"
+            incr successes
+        }
     }
     unset jdoc
 
-    set jdoc [parse_json $::listsample]
+    set jdoc [parse_json ${::listsample}]
     foreach test [array names testitems2] {
-	set nested [getxpath $jdoc $test]
-	set valid $testitems2($test)
-	if { [string compare $valid $nested] == 0 } {
-	    incr successes
-	} else {
-	    puts "$nested <!> $valid"
-	    incr failures
-	}
+        set nested [getxpath ${jdoc} ${test}]
+        set valid $testitems2(${test})
+        if { [string compare ${valid} ${nested}] == 0 } {
+            incr successes
+        } else {
+            puts "${nested} <!> ${valid}"
+            incr failures
+        }
     }
 
-    for {set i 0} {$i < [llength $failitems2]} {incr i} {
-	set test [lindex $failitems2 $i]
-	if { [catch {set element [getxpath $jdoc $test]} mesg] == 0 } {
-	    # This is expected to fail, should not execute
-	    puts "found: \"$test\" as \"$element\""
-	    incr failures
-	} else {
-	    puts "caught exception, as expected"
-	    incr successes
-	}
+    for {set i 0} {${i} < [llength ${failitems2}]} {incr i} {
+        set test [lindex ${failitems2} ${i}]
+        if { [catch {set element [getxpath ${jdoc} ${test}]} mesg] == 0 } {
+            # This is expected to fail, should not execute
+            puts "found: \"${test}\" as \"${element}\""
+            incr failures
+        } else {
+            puts "caught exception, as expected"
+            incr successes
+        }
     }
     unset jdoc
     puts "--- testxpath ---"
-    procsummary $successes $failures
+    procsummary ${successes} ${failures}
 }
 
 proc procsummary {successes failures} {
-    incr ::totalsuccesses $successes
-    incr ::totalfailures $failures
-    puts [format "%d successes, %d failures\n" $successes $failures]
+    incr ::totalsuccesses ${successes}
+    incr ::totalfailures ${failures}
+    puts [format "%d successes, %d failures\n" ${successes} ${failures}]
 }
 
 proc summary {} {
     puts "=== total ==="
-    puts [format "%d successes, %d failures\n" $::totalsuccesses $::totalfailures]
+    puts [format "%d successes, %d failures\n" ${::totalsuccesses} ${::totalfailures}]
 }
 
 poptests
