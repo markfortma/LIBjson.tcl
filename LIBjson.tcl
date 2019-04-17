@@ -104,11 +104,15 @@ proc json_parse {lexemes} {
 
 	    }
 	    ":" {
-		# Last element was a key
-		set lastkey [lindex $lexemes [expr $count - 1]]
+		set lastkey [lindex $json_array [expr $count - 1]]
 	    }
 	    "," {
-	        set lastkey {}
+		if { [string length $lastkey] > 0 } {
+		    set value [lpop json_array]
+		    set key [lpop json_array]
+		    lappend json_array [list $key $value]
+		}
+		set lastkey {}
 	    }
 	    default {
 		lappend json_array $token
