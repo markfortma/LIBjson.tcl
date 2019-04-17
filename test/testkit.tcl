@@ -2,39 +2,120 @@
 
 source "../LIBjson.tcl"
 
-proc testlexemes {} {
-    set doclen 0
-    puts "doclen => $doclen"
-    set samfile [open "ctrl_pp.json"]
-    puts "opened sample JSON file"
-    set sample [read $samfile]
-    puts "read sample JSON file, length: [tell $samfile]"
-    close $samfile
-    puts "closed"
-    set lexemes [json_lexer $sample doclen]
-    puts "doclen => $doclen"
-    puts "lexemes=> [llength $lexemes]"
+# A collection of JSON objects
+set ::ctrlsample {{
+    "booleans": [
+        true,
+        false,
+        null
+    ],
+    "control": {
+        "cr": "\r",
+        "crlf": "\r\n",
+        "lf": "\n",
+        "tab": "\t"
+    },
+    "floating": [
+        0.98,
+        9000000.0,
+        0.0009
+    ],
+    "integers": [
+        1,
+        2,
+        3
+    ],
+    "legal": "\u00a7108",
+    "nested": {
+        "age": 15,
+        "name": "Atreyu",
+        "steed": "Falcor",
+        "story": [
+            "Neverending Story"
+        ]
+    },
+    "string": [
+        "Matthew",
+        "Mark",
+        "Luke",
+        "John"
+    ]
+}}
+set ::ctrlsampleton [list booleans {true false null} control {cr {\r} crlf {\r\n} lf {\n} tab {\t}} floating {0.98 9000000.0 0.0009} integers {1 2 3} legal {\u00a7108} nested {age 15 name Atreyu steed Falcor story {{Neverending Story}}} string {Matthew Mark Luke John}]
 
-    for {set i 0} {$i < [llength $lexemes]} {incr i} {
-	puts "index: $i has [lindex $lexemes $i]"
+# A list of JSON objects
+set ::listsample {[
+    {
+        "color": "white",
+        "value": "#ffffff"
+    },
+    {
+        "color": "grey",
+        "value": "#0f0f0f"
+    },
+    {
+        "color": "black",
+        "value": "#000000"
     }
+]}
+set ::listsampleton [list {color white value #ffffff} {color grey value #0f0f0f} {color black value #000000}]
+set ::totalfailures 0
+set ::totalsuccesses 0
+
+proc poptests {} {
+    set failures 0
+    set successes 0
+    set simplelist [list a b c]
+    set simplelen [llength $simplelist]
+    set testitem "d"
+
+    puts "--- poptests ---"
+
+    # Append (to demonstrate a "push" action)
+    lappend simplelist $testitem
+    if { [string compare $simplelist "a b c d"] == 0 && [llength $simplelist] == [expr $simplelen + 1]} {
+	puts "push of \"$testitem\" successful"
+	incr successes
+    } else {
+	puts "push of \"$testitem\" failed"
+	incr failures
+    }
+
+    set element [lpop simplelist]
+    if { [string compare $element $testitem] == 0 && [llength $simplelist] == $simplelen } {
+	puts "pop of \"$testitem\" successful"
+	incr successes
+    } else {
+	puts "pop of \"$testitem\" failed"
+	incr failures
+    }
+    puts "--- poptests ---"
+    incr ::totalsuccesses $successes
+    incr ::totalfailures $failures
+    puts [format "%d successes, %d failures\n" $successes $failures]
+}
+
+proc jsonlittest {} {
+}
+
+proc jsonnumtest {} {
+}
+
+proc jsonbooltest {} {
+}
+
+proc testlexemes {} {
 }
 
 proc testparse {} {
-    set doclen 0
-    set samfile [open "ctrl.json"]
-    set sample [read $samfile]
-    close $samfile
-
-    set lexemes [json_lexer $sample doclen]
-    for {set x 0} {$x < [llength $lexemes]} {incr x} {
-	puts "lexeme index $x -> [lindex $lexemes $x]"
-    }
-    set doclen 0
-    set json_object [json_parse $lexemes]
-    puts "json_object => $json_object"
 }
 
-testparse
-    
+proc summary {} {
+    puts "=== total ==="
+    puts [format "%d successes, %d failures\n" $::totalsuccesses $::totalfailures]
+}
+
+poptests
+summary
+
 exit 0
