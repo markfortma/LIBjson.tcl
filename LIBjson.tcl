@@ -64,7 +64,7 @@ proc json_boolean_create {document at} {
     set boolean ""
     upvar 1 $at doclen
     if { [string length $document] > 0 } {
-	if { [regexp -nocase -- {(\s*)(true|false|null)} $document groups space value] != 0 } {
+	if { [regexp -nocase -- {(\s*)(?![[:punct:]])(true|false|null)[[:space:],]?(?![[:punct:]])} $document groups space value] != 0 } {
 	    incr doclen [expr [string length $groups] - 1]
 	    set boolean $value
 	}
