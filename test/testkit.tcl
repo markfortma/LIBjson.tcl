@@ -260,7 +260,7 @@ proc testxpath {} {
 
     array set testitems [list {/nested/story/0} {Neverending Story} {/string/0} {Matthew} {/control/cr} {\r}]
     array set testitems2 [list {/0/color} {white} {/1/value} {#0f0f0f}]
-    set failitems [list {/string/Matthew}]
+    set failitems [list {/booleans/true}]
     set failitems2 [list {/color}]
 
     puts "--- testxpath ---"
