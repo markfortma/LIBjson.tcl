@@ -120,7 +120,7 @@ proc jsonnumtest {} {
     set failures 0
     set successes 0
     # An associative array of test values and their expected results
-    array set numtests [list {:   0.998,} {0.998} {  "${88}.76",} {} {:  "0.98%",} {} {:99e-5,} {99e-5} {99} {99}]
+    array set numtests [list {:   0.998,} {0.998} {  "$88.76",} {} {:  "0.98%",} {} {:99e-5,} {99e-5} {99} {99}]
 
     puts "--- jsonnumtest ---"
     foreach test [array names numtests] {
