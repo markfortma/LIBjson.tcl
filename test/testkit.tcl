@@ -171,40 +171,34 @@ proc testlexemes {} {
     set failures 0
 
     # Tokenized array containing the expected results
-    set template {}
-    lappend template "\["
-    lappend template "\{"
-    lappend template "color"
-    lappend template ":"
-    lappend template "white"
-    lappend template ","
-    lappend template "value"
-    lappend template ":"
-    lappend template "#ffffff"
-    lappend template "\}"
-    lappend template ","
-    lappend template "\{"
-    lappend template "color"
-    lappend template ":"
-    lappend template "grey"
-    lappend template ","
-    lappend template "value"
-    lappend template ":"
-    lappend template "#0f0f0f"
-    lappend template "\}"
-    lappend template ","
-    lappend template "\{"
-    lappend template "color"
-    lappend template ":"
-    lappend template "black"
-    lappend template ","
-    lappend template "value"
-    lappend template ":"
-    lappend template "#00000"
-    lappend template "\}"
-    lappend template "\]"
+    set template [list \[ \{ color : white , value : "#ffffff" \} , \{ color : grey , value : "#0f0f0f" \} , \{ color : black , value : "#000000" \} \]]
     puts "--- testlexemes ---"
     set tokens [json_lexer ${::listsample}]
+    if { [llength ${tokens}] == [llength ${template}] } {
+        puts "Length phase:  passed"
+        incr successes
+    } else {
+        puts "Length phase:  failed"
+        incr failures
+    }
+    set compares 0
+    set lesslen [expr [llength ${tokens}] ? [llength ${tokens}] <= [llength ${template}] : [llength ${template}]]
+    for {set i 0} {${i} < ${lesslen}} {incr i} {
+        if { [string compare [lindex ${tokens} ${i}] [lindex ${template} ${i}]] == 0 } {
+            incr compares
+        }
+    }
+    if { ${compares} == ${lesslen} } {
+        puts "Compare phase: passed"
+        incr successes
+    } else {
+        puts "Compare phase: failed"
+        incr failures
+    }
+
+    # Tokenized array containing the expected results
+    set template [list \{ booleans : \[ true , false , null \] , control : \{ cr : \\r , crlf : \\r\\n , lf : \\n , tab : \\t \} , floating : \[ 0.98 , 9000000.0 , 0.0009 \] , integers : \[ 1 , 2 , 3 \] , legal \\u00a7108 , nested : \{ age : 15 , name : Atreyu , steed : Falcor , story : \[ "Neverending Story" \] \} , "string" : \[ Matthew , Mark , Luke, John \] \}]
+    set tokens [json_lexer ${::ctrlsample}]
     if { [llength ${tokens}] == [llength ${template}] } {
         puts "Length phase:  passed"
         incr successes
