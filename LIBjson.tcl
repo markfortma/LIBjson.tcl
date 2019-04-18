@@ -35,11 +35,10 @@ proc lpop {target} {
 
 proc expired {start} {
     set expired 0
-    set now [clock clicks -microseconds]
-    # convert seconds to microseconds
-    set timeout [expr ${::maxtime} * 1000000]
+    # convert seconds to milliseconds
+    set timeout [expr ${::maxtime} * 1000]
     # return the boolean of the comparison
-    set isexpired [expr [expr [clock clicks -microseconds] - ${start}] > ${timeout}]
+    set isexpired [expr [expr [clock clicks -milliseconds] - ${start}] > ${timeout}]
     return $isexpired
 }
 
@@ -88,7 +87,7 @@ proc json_parse {lexemes} {
     set count 0
     set depth 0
     set signal 0
-    set now [clock clicks -microseconds]
+    set now [clock clicks -milliseconds]
     set length [llength ${lexemes}]
     if { [string equal [lindex ${lexemes} 0] "\{"] == 1 && [string equal [lindex ${lexemes} end] "\}"] == 0 } {
         error "Invalid JSON object"
@@ -99,35 +98,35 @@ proc json_parse {lexemes} {
         incr length -1
     }
     if { ${length} > ${::maxlength} } {
-	puts "exceeds ${::maxlength} characters"
-	return $json_array
+        puts "exceeds ${::maxlength} characters"
+        return $json_array
     }
     while { ${count} < ${length} } {
-	if { [expired ${now}] != 0 } {
-	    puts "exceeded ${::maxtime} seconds"
-	    set signal 1
-	} elseif { ${depth} > ${::maxdepth} } {
-	    puts "exceeded ${::maxdepth} nested objects"
-	    set signal 1
-	}
+        if { [expired ${now}] != 0 } {
+            puts "exceeded ${::maxtime} seconds"
+            set signal 1
+        } elseif { ${depth} > ${::maxdepth} } {
+            puts "exceeded ${::maxdepth} nested objects"
+            set signal 1
+        }
         set token [lindex ${lexemes} ${count}]
         switch -- ${token} {
             "\{" -
             "\[" {
-		incr depth
+                incr depth
                 lappend stack ${json_array}
                 lappend keystack [lpop json_array]
                 set json_array {}
             }
             "\}" -
             "\]" {
-		incr depth -1
+                incr depth -1
                 set parent [lpop stack]
                 lappend parent ${json_array}
                 set json_array ${parent}
-		if { ${signal} != 0 } {
-		    break
-		}
+                if { ${signal} != 0 } {
+                    break
+                }
             }
             ":" {
                 set lastkey [lindex ${json_array} [expr ${count} - 1]]
@@ -139,9 +138,9 @@ proc json_parse {lexemes} {
                     lappend json_array [list ${key} ${value}]
                 }
                 set lastkey {}
-		if { ${signal} != 0 } {
-		    break
-		}
+                if { ${signal} != 0 } {
+                    break
+                }
             }
             default {
                 lappend json_array ${token}
@@ -151,10 +150,10 @@ proc json_parse {lexemes} {
     }
     # pop any of the remaining stack before returning
     while { [llength $stack] > 0 } {
-	# lpop will decrement the stack size by one
-	set parent [lpop stack]
-	lappend parent ${json_array}
-	set json_array ${parent}
+        # lpop will decrement the stack size by one
+        set parent [lpop stack]
+        lappend parent ${json_array}
+        set json_array ${parent}
     }
     return ${json_array}
 }
