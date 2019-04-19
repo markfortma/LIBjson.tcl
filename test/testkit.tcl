@@ -157,7 +157,7 @@ proc jsonbooltest {} {
             puts "\"json_boolean_create\" passed"
             incr successes
         } else {
-            puts "${result} <!> ${booltests}(${test})"
+            puts "${result} <!> $booltests(${test})"
             puts "\"json_boolean_create\" failed"
             incr failures
         }
