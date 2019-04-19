@@ -97,7 +97,7 @@ proc jsonlittest {} {
     set failures 0
     set successes 0
     # An associative array of test values and their expected results
-    array set littests [list {: "element",} {element} {null} {} {: 123,} {} {"\u00a7108"} {\u00a7108}]
+    array set littests [list {: "element",} {element} {null} {} {: 123,} {} { "\u00a7108"} {\u00a7108}]
 
     puts "--- jsonlittest ---"
     foreach test [array names littests] {
