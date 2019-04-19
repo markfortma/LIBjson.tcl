@@ -107,7 +107,7 @@ proc jsonlittest {} {
             puts "\"json_literal_create\" passed"
             incr successes
         } else {
-            puts "${result} <!> ${littests}(${test})"
+            puts "${result} <!> $littests(${test})"
             puts "\"json_literal_create\" failed"
             incr failures
         }
