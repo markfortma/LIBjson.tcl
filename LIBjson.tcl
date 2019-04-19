@@ -97,10 +97,6 @@ proc json_parse {lexemes} {
         incr count
         incr length -1
     }
-    if { ${length} > ${::maxlength} } {
-        puts "exceeds ${::maxlength} characters"
-        return $json_array
-    }
     while { ${count} < ${length} } {
         if { [expired ${now}] != 0 } {
             puts "exceeded ${::maxtime} seconds"
@@ -163,6 +159,10 @@ proc json_lexer {document} {
     set json_lexemes {}
     set doclen 0
     set docend [string length ${document}]
+    if { ${docend} > ${::maxlength} } {
+        puts "exceeds ${::maxlength} characters"
+        return $json_array
+    }
     while { ${doclen} < ${docend} } {
         if { [regexp -nocase -start ${doclen} -- {(\s*)([\{\}\[\]\"tfn0-9:,])} ${document} groups space character] != 0 } {
             incr doclen [string length ${groups}]

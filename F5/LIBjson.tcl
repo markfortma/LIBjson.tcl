@@ -70,10 +70,6 @@ proc json_parse {lexemes} {
         incr count
         incr length -1
     }
-    if { ${length} > ${static::maxlength} } {
-        log local0.warn "exceeds ${static::maxlength} characters"
-        return $json_array
-    }
     while { ${count} < ${length} } {
         if { [call LIBjson.tcl::expired ${now}] != 0 } {
             log local0.warn "exceeded ${static::maxtime} seconds"
@@ -135,6 +131,10 @@ proc json_lexer {document} {
     set json_lexemes {}
     set doclen 0
     set docend [string length ${document}]
+    if { ${docend} > ${static::maxlength} } {
+        log local0.warn "exceeds ${static::maxlength} characters"
+        return $json_array
+    }
     while { ${doclen} < ${docend} } {
         if { [regexp -nocase -start ${doclen} -- {(\s*)([\{\}\[\]\"tfn0-9:,])} ${document} groups space character] != 0 } {
             incr doclen [string length ${groups}]
