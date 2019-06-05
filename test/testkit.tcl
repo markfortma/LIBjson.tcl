@@ -120,7 +120,7 @@ proc jsonnumtest {} {
     set failures 0
     set successes 0
     # An associative array of test values and their expected results
-    array set numtests [list {:   0.998,} {0.998} {  "$88.76",} {0} {:  "0.98%",} {0} {: 99e-5,} {99e-5} { 99} {99}]
+    array set numtests [list {:   0.998,} {0.998} {  "$88.76",} {88.76} {:  "0.98%",} {0.98} {: 99e-5,} {99e-5} { 99} {99}]
 
     # NOTE: It is understandable that the decimal values within quotes (with punctuation/symbols) *should not* match; however,
     # the numbers are of valid form. Be advised - during lexing, those would normally be diverted to
